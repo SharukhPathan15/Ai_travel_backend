@@ -12,7 +12,16 @@ import errorMiddleware from "./middleware/error.middleware.js";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://your-frontend-domain.vercel.app",
+      "https://your-frontend-domain.netlify.app"
+    ],
+    credentials: true,
+  })
+);
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(cookieParser());
