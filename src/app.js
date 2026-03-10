@@ -16,7 +16,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://ai-travel-frontend-six.vercel.app"
+      "https://ai-travel-frontend-beta.vercel.app"
     ],
     credentials: true
   })
