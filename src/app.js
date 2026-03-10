@@ -15,11 +15,9 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "http://localhost:3000",
-      "https://your-frontend-domain.vercel.app",
-      "https://your-frontend-domain.netlify.app"
+      "http://localhost:3000"
     ],
-    credentials: true,
+    credentials: true
   })
 );
 app.use(helmet());

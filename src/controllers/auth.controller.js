@@ -3,19 +3,11 @@ import asyncHandler from "../utils/asyncHandler.js";
 import { hashPassword, comparePassword } from "../utils/hash.js";
 import { generateToken } from "../utils/jwt.js";
 
-const cookieOptions = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
-};
-
 export const registerUser = asyncHandler(async (req, res) => {
 
   const { name, email, password } = req.body;
 
-  const normalizedEmail = email.toLowerCase();
-
-  const existingUser = await User.findOne({ email: normalizedEmail });
+  const existingUser = await User.findOne({ email });
 
   if (existingUser) {
     const error = new Error("User already exists");
@@ -27,29 +19,29 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   const user = await User.create({
     name,
-    email: normalizedEmail,
+    email,
     password: hashedPassword
   });
 
   const token = generateToken(user._id);
 
-  res.cookie("token", token, cookieOptions);
-
-  const userWithoutPassword = user.toObject();
-  delete userWithoutPassword.password;
+  res.cookie("token", token, {
+    httpOnly: true,
+    sameSite: "none",
+    secure: true
+  });
 
   res.status(201).json({
     success: true,
-    data: userWithoutPassword
+    data: user
   });
 });
-
 
 export const loginUser = asyncHandler(async (req, res) => {
 
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email: email.toLowerCase() });
+  const user = await User.findOne({ email });
 
   if (!user) {
     const error = new Error("Invalid credentials");
@@ -67,14 +59,15 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   const token = generateToken(user._id);
 
-  res.cookie("token", token, cookieOptions);
-
-  const userWithoutPassword = user.toObject();
-  delete userWithoutPassword.password;
+  res.cookie("token", token, {
+    httpOnly: true,
+    sameSite: "none",
+    secure: true
+  });
 
   res.json({
     success: true,
-    data: userWithoutPassword
+    data: user
   });
 });
 
@@ -96,14 +89,8 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
 
 });
 
-
 export const logoutUser = (req, res) => {
-
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
-  });
+  res.clearCookie("token");
 
   res.json({
     success: true,
