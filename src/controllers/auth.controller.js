@@ -3,11 +3,19 @@ import asyncHandler from "../utils/asyncHandler.js";
 import { hashPassword, comparePassword } from "../utils/hash.js";
 import { generateToken } from "../utils/jwt.js";
 
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+};
+
 export const registerUser = asyncHandler(async (req, res) => {
 
   const { name, email, password } = req.body;
 
-  const existingUser = await User.findOne({ email });
+  const normalizedEmail = email.toLowerCase();
+
+  const existingUser = await User.findOne({ email: normalizedEmail });
 
   if (existingUser) {
     const error = new Error("User already exists");
@@ -19,29 +27,29 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   const user = await User.create({
     name,
-    email,
+    email: normalizedEmail,
     password: hashedPassword
   });
 
   const token = generateToken(user._id);
 
-  res.cookie("token", token, {
-    httpOnly: true,
-    sameSite: "strict",
-    secure: false
-  });
+  res.cookie("token", token, cookieOptions);
+
+  const userWithoutPassword = user.toObject();
+  delete userWithoutPassword.password;
 
   res.status(201).json({
     success: true,
-    data: user
+    data: userWithoutPassword
   });
 });
+
 
 export const loginUser = asyncHandler(async (req, res) => {
 
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email: email.toLowerCase() });
 
   if (!user) {
     const error = new Error("Invalid credentials");
@@ -59,15 +67,14 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   const token = generateToken(user._id);
 
-  res.cookie("token", token, {
-    httpOnly: true,
-    sameSite: "strict",
-    secure: false
-  });
+  res.cookie("token", token, cookieOptions);
+
+  const userWithoutPassword = user.toObject();
+  delete userWithoutPassword.password;
 
   res.json({
     success: true,
-    data: user
+    data: userWithoutPassword
   });
 });
 
@@ -89,8 +96,14 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
 
 });
 
+
 export const logoutUser = (req, res) => {
-  res.clearCookie("token");
+
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+  });
 
   res.json({
     success: true,
