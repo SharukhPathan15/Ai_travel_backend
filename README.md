@@ -58,7 +58,7 @@ NODE_ENV=development
 npm run dev
 
 # Production
-npm start
+npm run dev
 ```
 
 Server runs on [http://localhost:5000](http://localhost:5000).
