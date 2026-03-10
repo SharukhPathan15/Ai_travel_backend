@@ -4,7 +4,6 @@ import { hashPassword, comparePassword } from "../utils/hash.js";
 import { generateToken } from "../utils/jwt.js";
 
 export const registerUser = asyncHandler(async (req, res) => {
-
   const { name, email, password } = req.body;
 
   const existingUser = await User.findOne({ email });
@@ -20,7 +19,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     name,
     email,
-    password: hashedPassword
+    password: hashedPassword,
   });
 
   const token = generateToken(user._id);
@@ -28,17 +27,16 @@ export const registerUser = asyncHandler(async (req, res) => {
   res.cookie("token", token, {
     httpOnly: true,
     sameSite: "none",
-    secure: true
+    secure: true,
   });
 
   res.status(201).json({
     success: true,
-    data: user
+    data: user,
   });
 });
 
 export const loginUser = asyncHandler(async (req, res) => {
-
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
@@ -62,18 +60,16 @@ export const loginUser = asyncHandler(async (req, res) => {
   res.cookie("token", token, {
     httpOnly: true,
     sameSite: "none",
-    secure: true
+    secure: true,
   });
 
   res.json({
     success: true,
-    data: user
+    data: user,
   });
 });
 
-
 export const getCurrentUser = asyncHandler(async (req, res) => {
-
   const user = await User.findById(req.user.userId).select("-password");
 
   if (!user) {
@@ -84,9 +80,8 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    data: user
+    data: user,
   });
-
 });
 
 export const logoutUser = (req, res) => {
@@ -94,6 +89,6 @@ export const logoutUser = (req, res) => {
 
   res.json({
     success: true,
-    message: "Logged out successfully"
+    message: "Logged out successfully",
   });
 };
