@@ -7,7 +7,6 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express-4-black?style=for-the-badge&logo=express)](https://expressjs.com)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb)](https://mongodb.com)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 *RESTful API powering authentication, trip management, and AI itinerary generation via Anthropic Claude.*
 
@@ -29,7 +28,7 @@ IntelliTrip's backend is a RESTful API built with Node.js and Express. It handle
 | **MongoDB + Mongoose** | Database & ODM | Flexible schema ideal for variable itinerary structures |
 | **JSON Web Tokens** | Authentication | Stateless auth — no session store needed |
 | **bcryptjs** | Password hashing | Industry-standard, easy to use, no native dependencies |
-| **Anthropic SDK** | AI generation | Claude produces well-structured, reliable JSON output |
+| **groq sdk** | AI generation | fast output, reliable JSON output |
 
 ---
 
@@ -46,7 +45,7 @@ IntelliTrip's backend is a RESTful API built with Node.js and Express. It handle
 ```bash
 # 1. Clone the repository
 git clone https://github.com/your-username/intellitrip-backend.git
-cd intellitrip-backend
+cd backend
 
 # 2. Install dependencies
 npm install
@@ -68,8 +67,7 @@ PORT=5000
 MONGO_URI=mongodb://localhost:27017/intellitrip
 JWT_SECRET=your_jwt_secret_key_here
 JWT_EXPIRE=7d
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
-NODE_ENV=development
+GROQ_API_KEY=groq_api_key_here
 ```
 
 > ⚠️ Never commit `.env` to version control. Use `.env.example` as a safe template.
@@ -303,13 +301,8 @@ A global error handler middleware catches all unhandled errors and formats them 
 
 ```bash
 npm run dev    # Start with nodemon (auto-restart)
-npm start      # Production server
+npm run dev      # Production server
 ```
 
 ---
 
-<div align="center">
-
-MIT © [IntelliTrip](https://github.com/your-username/intellitrip) · Built with ❤️ and ☕
-
-</div>
